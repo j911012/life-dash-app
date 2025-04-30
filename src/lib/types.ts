@@ -7,5 +7,5 @@ export type Todo = {
   category?: string;
   flagged: boolean;
   completed: boolean;
-  createdAt: string;
+  // createdAt: string;
 };
