@@ -17,6 +17,8 @@ import type { Todo } from "@/lib/types";
 export default function TodoPage() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editInput, setEditInput] = useState("");
 
   // localStorageからTodoを読み込む
   useEffect(() => {
@@ -34,13 +36,13 @@ export default function TodoPage() {
   const addTask = () => {
     if (!input.trim()) return;
     setTodos([
-      ...todos,
       {
         id: crypto.randomUUID(),
         title: input.trim(),
         completed: false,
         flagged: false,
       },
+      ...todos,
     ]);
     setInput("");
   };
@@ -63,6 +65,33 @@ export default function TodoPage() {
 
   const deleteTask = (id: string) => {
     setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  };
+
+  // 編集モードを開始
+  const startEditing = (todo: Todo) => {
+    setEditingId(todo.id);
+    setEditInput(todo.title);
+  };
+
+  // 編集モードでEnterキーを押したら編集を確定
+  const handleEditSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (editInput.trim()) {
+        setTodos((prev) =>
+          prev.map((todo) =>
+            todo.id === editingId ? { ...todo, title: editInput.trim() } : todo
+          )
+        );
+      }
+      setEditingId(null);
+      setEditInput("");
+    }
+  };
+
+  // フォーカスが外れたら編集をキャンセル
+  const handleEditBlur = () => {
+    setEditingId(null);
+    setEditInput("");
   };
 
   return (
@@ -90,13 +119,24 @@ export default function TodoPage() {
               className="mr-3"
             />
 
-            <span
-              className={`flex-1 truncate ${
-                todo.completed ? "line-through text-gray-400" : ""
-              }`}
-            >
-              {todo.title}
-            </span>
+            {editingId === todo.id ? (
+              <Input
+                value={editInput}
+                onChange={(e) => setEditInput(e.target.value)}
+                onKeyDown={handleEditSubmit}
+                onBlur={handleEditBlur}
+                className="flex-1"
+                autoFocus
+              />
+            ) : (
+              <span
+                className={`flex-1 truncate ${
+                  todo.completed ? "line-through text-gray-400" : ""
+                }`}
+              >
+                {todo.title}
+              </span>
+            )}
 
             {todo.flagged && <Flag className="h-4 w-4 text-yellow-500" />}
 
@@ -107,6 +147,9 @@ export default function TodoPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-28">
+                <DropdownMenuItem onClick={() => startEditing(todo)}>
+                  Edit
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => toggleFlag(todo.id)}>
                   {todo.flagged ? "Unflag" : "Flag"}
                 </DropdownMenuItem>
