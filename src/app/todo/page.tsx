@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,20 +14,27 @@ import {
 import { MoreVertical, Flag, Home } from "lucide-react";
 import type { Todo } from "@/lib/types";
 
-const initialTasks: Todo[] = [
-  { id: "1", title: "タスク 1", completed: true, flagged: false },
-  { id: "2", title: "タスク 2", completed: false, flagged: true },
-  { id: "3", title: "タスク 3", completed: false, flagged: false },
-];
-
 export default function TodoPage() {
-  const [tasks, setTasks] = useState<Todo[]>(initialTasks);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
+
+  // localStorageからTodoを読み込む
+  useEffect(() => {
+    const savedTodos = localStorage.getItem("todos");
+    if (savedTodos) {
+      setTodos(JSON.parse(savedTodos));
+    }
+  }, []);
+
+  // Todoが更新されるたびにlocalStorageに保存
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   const addTask = () => {
     if (!input.trim()) return;
-    setTasks([
-      ...tasks,
+    setTodos([
+      ...todos,
       {
         id: crypto.randomUUID(),
         title: input.trim(),
@@ -39,23 +46,23 @@ export default function TodoPage() {
   };
 
   const toggleComplete = (id: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
   };
 
   const toggleFlag = (id: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, flagged: !task.flagged } : task
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id ? { ...todo, flagged: !todo.flagged } : todo
       )
     );
   };
 
   const deleteTask = (id: string) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
   };
 
   return (
@@ -75,23 +82,23 @@ export default function TodoPage() {
       </div>
 
       <ul className="space-y-2">
-        {tasks.map((task) => (
-          <li key={task.id} className="flex items-center rounded-md border p-2">
+        {todos.map((todo) => (
+          <li key={todo.id} className="flex items-center rounded-md border p-2">
             <Checkbox
-              checked={task.completed}
-              onCheckedChange={() => toggleComplete(task.id)}
+              checked={todo.completed}
+              onCheckedChange={() => toggleComplete(todo.id)}
               className="mr-3"
             />
 
             <span
               className={`flex-1 truncate ${
-                task.completed ? "line-through text-gray-400" : ""
+                todo.completed ? "line-through text-gray-400" : ""
               }`}
             >
-              {task.title}
+              {todo.title}
             </span>
 
-            {task.flagged && <Flag className="h-4 w-4 text-yellow-500" />}
+            {todo.flagged && <Flag className="h-4 w-4 text-yellow-500" />}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -100,10 +107,10 @@ export default function TodoPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-28">
-                <DropdownMenuItem onClick={() => toggleFlag(task.id)}>
-                  {task.flagged ? "Unflag" : "Flag"}
+                <DropdownMenuItem onClick={() => toggleFlag(todo.id)}>
+                  {todo.flagged ? "Unflag" : "Flag"}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => deleteTask(task.id)}>
+                <DropdownMenuItem onClick={() => deleteTask(todo.id)}>
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
