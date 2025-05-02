@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,87 +12,49 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Flag, Home } from "lucide-react";
+import { useTodos } from "@/hooks/useTodos";
 import type { Todo } from "@/lib/types";
 
 export default function TodoPage() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const {
+    todos,
+    initialized,
+    addTodo,
+    toggleComplete,
+    toggleFlag,
+    deleteTodo,
+    editTodo,
+  } = useTodos();
   const [input, setInput] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editInput, setEditInput] = useState("");
 
-  // localStorageからTodoを読み込む
-  useEffect(() => {
-    const savedTodos = localStorage.getItem("todos");
-    if (savedTodos) {
-      setTodos(JSON.parse(savedTodos));
-    }
-  }, []);
-
-  // Todoが更新されるたびにlocalStorageに保存
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
-
-  const addTask = () => {
-    if (!input.trim()) return;
-    setTodos([
-      {
-        id: crypto.randomUUID(),
-        title: input.trim(),
-        completed: false,
-        flagged: false,
-      },
-      ...todos,
-    ]);
+  const handleAddTodo = () => {
+    addTodo(input);
     setInput("");
   };
 
-  const toggleComplete = (id: string) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
-
-  const toggleFlag = (id: string) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, flagged: !todo.flagged } : todo
-      )
-    );
-  };
-
-  const deleteTask = (id: string) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
-  };
-
-  // 編集モードを開始
-  const startEditing = (todo: Todo) => {
-    setEditingId(todo.id);
-    setEditInput(todo.title);
-  };
-
-  // 編集モードでEnterキーを押したら編集を確定
   const handleEditSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      if (editInput.trim()) {
-        setTodos((prev) =>
-          prev.map((todo) =>
-            todo.id === editingId ? { ...todo, title: editInput.trim() } : todo
-          )
-        );
-      }
+    if (e.key === "Enter" && editingId) {
+      editTodo(editingId, editInput);
       setEditingId(null);
       setEditInput("");
     }
   };
 
-  // フォーカスが外れたら編集をキャンセル
+  const startEditing = (todo: Todo) => {
+    setEditingId(todo.id);
+    setEditInput(todo.title);
+  };
+
   const handleEditBlur = () => {
     setEditingId(null);
     setEditInput("");
   };
+
+  if (!initialized) {
+    return null; // または適切なローディング表示
+  }
 
   return (
     <main className="mx-auto max-w-md p-4 space-y-6">
@@ -105,9 +67,10 @@ export default function TodoPage() {
           placeholder="タスクを入力"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAddTodo()}
           className="flex-1"
         />
-        <Button onClick={addTask}>Add</Button>
+        <Button onClick={handleAddTodo}>Add</Button>
       </div>
 
       <ul className="space-y-2">
@@ -153,7 +116,7 @@ export default function TodoPage() {
                 <DropdownMenuItem onClick={() => toggleFlag(todo.id)}>
                   {todo.flagged ? "Unflag" : "Flag"}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => deleteTask(todo.id)}>
+                <DropdownMenuItem onClick={() => deleteTodo(todo.id)}>
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
