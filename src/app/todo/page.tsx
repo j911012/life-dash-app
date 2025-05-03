@@ -29,7 +29,10 @@ export default function TodoPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editInput, setEditInput] = useState("");
 
-  const handleAddTodo = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
     addTodo(input);
     setInput("");
   };
@@ -62,16 +65,15 @@ export default function TodoPage() {
         <Home size={26} className="text-gray-400 hover:text-gray-800" />
       </Link>
 
-      <div className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex gap-2">
         <Input
           placeholder="タスクを入力"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleAddTodo()}
           className="flex-1"
         />
-        <Button onClick={handleAddTodo}>Add</Button>
-      </div>
+        <Button type="submit">Add</Button>
+      </form>
 
       <ul className="space-y-2">
         {todos.map((todo) => (
