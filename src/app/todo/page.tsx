@@ -18,12 +18,13 @@ import type { Todo } from "@/lib/types";
 export default function TodoPage() {
   const {
     todos,
-    initialized,
     addTodo,
     toggleComplete,
     toggleFlag,
     deleteTodo,
     editTodo,
+    isLoading,
+    error,
   } = useTodos();
   const [input, setInput] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -55,8 +56,12 @@ export default function TodoPage() {
     setEditInput("");
   };
 
-  if (!initialized) {
-    return null; // または適切なローディング表示
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   return (

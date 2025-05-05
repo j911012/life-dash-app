@@ -5,23 +5,38 @@ import type { Todo } from "@/lib/types";
 
 export function useTodos() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [initialized, setInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // 初期化時にlocalStorageからデータを読み込む
-  useEffect(() => {
-    const savedTodos = localStorage.getItem("todos");
-    if (savedTodos) {
-      setTodos(JSON.parse(savedTodos));
+  // Todoの取得
+  const fetchTodos = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch("/api/todos");
+      if (!response.ok) {
+        throw new Error("Failed to fetch todos");
+      }
+
+      const data = await response.json();
+      setTodos(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
     }
-    setInitialized(true);
+  };
+
+  // 初期ロード時にTodoを取得
+  useEffect(() => {
+    fetchTodos();
   }, []);
 
   // todosが更新されたらlocalStorageに保存
   useEffect(() => {
-    if (initialized) {
-      localStorage.setItem("todos", JSON.stringify(todos));
-    }
-  }, [todos, initialized]);
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   const addTodo = (title: string) => {
     if (!title.trim()) return;
@@ -67,7 +82,9 @@ export function useTodos() {
 
   return {
     todos,
-    initialized,
+    isLoading,
+    error,
+    refetch: fetchTodos,
     addTodo,
     toggleComplete,
     toggleFlag,
