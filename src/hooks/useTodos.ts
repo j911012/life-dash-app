@@ -38,17 +38,28 @@ export function useTodos() {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
-  const addTodo = (title: string) => {
+  // Todoの追加
+  const addTodo = async (title: string) => {
     if (!title.trim()) return;
-    setTodos((prev) => [
-      {
-        id: crypto.randomUUID(),
-        title: title.trim(),
-        completed: false,
-        flagged: false,
-      },
-      ...prev,
-    ]);
+
+    try {
+      const response = await fetch("/api/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: title.trim() }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add todo");
+      }
+
+      const newTodo = await response.json();
+      setTodos((prev) => [newTodo, ...prev]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    }
   };
 
   const toggleComplete = (id: string) => {
