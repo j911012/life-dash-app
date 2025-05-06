@@ -6,25 +6,32 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { title, completed, flagged } = await request.json();
+  try {
+    const { title, completed, flagged } = await request.json();
 
-  const { data, error } = await supabase
-    .from("todos")
-    .update({
-      ...(title && { title }),
-      ...(completed !== undefined && { completed }),
-      ...(flagged !== undefined && { flagged }),
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", params.id)
-    .select()
-    .single();
+    const { data, error } = await supabase
+      .from("todos")
+      .update({
+        ...(title && { title }),
+        ...(completed !== undefined && { completed }),
+        ...(flagged !== undefined && { flagged }),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", params.id)
+      .select()
+      .single();
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json(
+      { error: "不正なリクエストです" },
+      { status: 400 }
+    );
   }
-
-  return NextResponse.json(data);
 }
 
 // DELETE: Todoの削除
