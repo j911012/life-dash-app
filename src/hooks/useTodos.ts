@@ -62,33 +62,121 @@ export function useTodos() {
     }
   };
 
-  const toggleComplete = (id: string) => {
+  // Todoの完了
+  const toggleComplete = async (id: string) => {
+    const targetTodo = todos.find((todo) => todo.id === id);
+    if (!targetTodo) return;
+
+    // 楽観的更新
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
+
+    // サーバー側の更新
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ completed: !targetTodo.completed }),
+      });
+
+      if (!response.ok) {
+        // エラーがあったら楽観的更新を元に戻す
+        setTodos((prev) =>
+          prev.map((todo) =>
+            todo.id === id ? { ...todo, completed: targetTodo.completed } : todo
+          )
+        );
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update todo");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    }
   };
 
-  const toggleFlag = (id: string) => {
+  // Todoのフラグ
+  const toggleFlag = async (id: string) => {
+    const targetTodo = todos.find((todo) => todo.id === id);
+    if (!targetTodo) return;
+
+    // 楽観的更新
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id ? { ...todo, flagged: !todo.flagged } : todo
       )
     );
+
+    // サーバー側の更新
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ flagged: !targetTodo.flagged }),
+      });
+
+      if (!response.ok) {
+        // エラーがあったら楽観的更新を元に戻す
+        setTodos((prev) =>
+          prev.map((todo) =>
+            todo.id === id ? { ...todo, flagged: targetTodo.flagged } : todo
+          )
+        );
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update todo");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    }
   };
 
   const deleteTodo = (id: string) => {
     setTodos((prev) => prev.filter((todo) => todo.id !== id));
   };
 
-  const editTodo = (id: string, newTitle: string) => {
+  // Todoの編集
+  const editTodo = async (id: string, newTitle: string) => {
     if (!newTitle.trim()) return;
+
+    const targetTodo = todos.find((todo) => todo.id === id);
+    if (!targetTodo) return;
+
+    // 楽観的更新
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id ? { ...todo, title: newTitle.trim() } : todo
       )
     );
+
+    // サーバー側の更新
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: newTitle.trim() }),
+      });
+
+      if (!response.ok) {
+        // エラーがあったら楽観的更新を元に戻す
+        setTodos((prev) =>
+          prev.map((todo) =>
+            todo.id === id ? { ...todo, title: targetTodo.title } : todo
+          )
+        );
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update todo");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    }
   };
 
   return {
