@@ -30,7 +30,9 @@ export default function TodoCard() {
 
         {!isLoading && !error && incompleteTodos.length === 0 && (
           <CardContent className="flex items-center justify-center h-full text-gray-500">
-            <div>すべてのタスクが完了しています！</div>
+            <p className="text-center text-sm">
+              すべてのタスクが完了しています！
+            </p>
           </CardContent>
         )}
 

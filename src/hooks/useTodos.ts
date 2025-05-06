@@ -136,10 +136,6 @@ export function useTodos() {
     }
   };
 
-  const deleteTodo = (id: string) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
-  };
-
   // Todoの編集
   const editTodo = async (id: string, newTitle: string) => {
     if (!newTitle.trim()) return;
@@ -173,6 +169,30 @@ export function useTodos() {
         );
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to update todo");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    }
+  };
+
+  // Todoの削除
+  const deleteTodo = async (id: string) => {
+    const targetTodo = todos.find((todo) => todo.id === id);
+    if (!targetTodo) return;
+
+    // 楽観的更新
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        // エラーがあったら楽観的更新を元に戻す
+        setTodos((prev) => [...prev, targetTodo]);
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete todo");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
