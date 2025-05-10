@@ -9,8 +9,8 @@ export default function CaloriesRayout({
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 pb-20 md:pb-0">
-        <div className="mx-auto max-w-4xl p-4">{children}</div>
+      <main className="flex-1 overflow-auto">
+        <div className="mx-auto max-w-4xl">{children}</div>
       </main>
       <MenuBar />
     </div>
