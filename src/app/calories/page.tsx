@@ -14,7 +14,6 @@ import {
   Legend,
 } from "recharts";
 
-// 仮のデータ
 const mockData = [
   { date: "5/1", weight: 66.0, bodyFat: 19.0, calories: 2100 },
   { date: "5/2", weight: 65.9, bodyFat: 18.9, calories: 1950 },
@@ -22,31 +21,13 @@ const mockData = [
   { date: "5/4", weight: 65.9, bodyFat: 18.9, calories: 1800 },
   { date: "5/5", weight: 65.7, bodyFat: 18.7, calories: 2000 },
   { date: "5/6", weight: 65.6, bodyFat: 18.6, calories: 1900 },
-  { date: "5/7", weight: 65.5, bodyFat: 18.5, calories: 2150 },
-  { date: "5/8", weight: 65.4, bodyFat: 18.4, calories: 1850 },
-  { date: "5/9", weight: 65.3, bodyFat: 18.3, calories: 2050 },
-  { date: "5/10", weight: 65.2, bodyFat: 18.2, calories: 1950 },
-  { date: "5/11", weight: 65.1, bodyFat: 18.1, calories: 2100 },
-  { date: "5/12", weight: 65.0, bodyFat: 18.0, calories: 1800 },
-  { date: "5/13", weight: 64.9, bodyFat: 17.9, calories: 2000 },
-  { date: "5/14", weight: 64.8, bodyFat: 17.8, calories: 1900 },
-  { date: "5/15", weight: 64.7, bodyFat: 17.7, calories: 2200 },
-  { date: "5/16", weight: 64.8, bodyFat: 17.8, calories: 1850 },
-  { date: "5/17", weight: 64.7, bodyFat: 17.7, calories: 2050 },
-  { date: "5/18", weight: 64.6, bodyFat: 17.6, calories: 1900 },
-  { date: "5/19", weight: 64.5, bodyFat: 17.5, calories: 2100 },
-  { date: "5/20", weight: 64.4, bodyFat: 17.4, calories: 1800 },
-  { date: "5/21", weight: 64.3, bodyFat: 17.3, calories: 2000 },
-  { date: "5/22", weight: 64.2, bodyFat: 17.2, calories: 1950 },
-  { date: "5/23", weight: 64.3, bodyFat: 17.3, calories: 2150 },
-  { date: "5/24", weight: 64.2, bodyFat: 17.2, calories: 1850 },
-  { date: "5/25", weight: 64.1, bodyFat: 17.1, calories: 2050 },
-  { date: "5/26", weight: 64.0, bodyFat: 17.0, calories: 1900 },
-  { date: "5/27", weight: 63.9, bodyFat: 16.9, calories: 2100 },
-  { date: "5/28", weight: 63.8, bodyFat: 16.8, calories: 1800 },
-  { date: "5/29", weight: 63.7, bodyFat: 16.7, calories: 2000 },
-  { date: "5/30", weight: 63.6, bodyFat: 16.6, calories: 1950 },
-  { date: "5/31", weight: 63.5, bodyFat: 16.5, calories: 2200 },
+  { date: "5/7", weight: 65.5, bodyFat: 18.5, calories: 2100 },
+  { date: "5/8", weight: 65.4, bodyFat: 18.4, calories: 1950 },
+  { date: "5/9", weight: 65.3, bodyFat: 18.3, calories: 2200 },
+  { date: "5/10", weight: 65.2, bodyFat: 18.2, calories: 1800 },
+  { date: "5/11", weight: 65.1, bodyFat: 18.1, calories: 2000 },
+  { date: "5/12", weight: 65.0, bodyFat: 18.0, calories: 1900 },
+  { date: "5/13", weight: 64.9, bodyFat: 17.9, calories: 2100 },
 ];
 
 const mockMeals = [
@@ -143,67 +124,64 @@ export default function CaloriesPage() {
             </div>
           </CardHeader>
           <CardContent className="relative p-3 pt-0 md:p-6 md:pt-0">
-            <div className="w-full overflow-x-auto">
-              <div className="h-[250px] md:h-[300px] min-w-[800px] md:min-w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={mockData} margin={{ right: 10 }}>
-                    <XAxis
-                      dataKey="date"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      interval={1}
-                      angle={-45}
-                      textAnchor="end"
-                      height={50}
-                    />
-                    <YAxis
-                      yAxisId="weight"
-                      orientation="left"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      domain={["dataMin - 0.5", "dataMax + 0.5"]}
-                      width={40}
-                    />
-                    <YAxis
-                      yAxisId="calories"
-                      orientation="right"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      width={50}
-                    />
-                    <Tooltip
-                      contentStyle={{ fontSize: "12px" }}
-                      itemStyle={{ fontSize: "12px" }}
-                      labelStyle={{ fontSize: "12px" }}
-                    />
-                    <Legend
-                      wrapperStyle={{
-                        fontSize: "12px",
-                        paddingTop: "15px",
-                      }}
-                    />
-                    <Bar
-                      yAxisId="calories"
-                      dataKey="calories"
-                      fill="rgb(59,130,246)"
-                      name="カロリー (kcal)"
-                      barSize={16}
-                    />
-                    <Line
-                      yAxisId="weight"
-                      type="monotone"
-                      dataKey="weight"
-                      stroke="rgb(34,197,94)"
-                      name="体重 (kg)"
-                      strokeWidth={2}
-                      dot={{ r: 2 }}
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
+            <div className="h-[250px] md:h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart
+                  data={mockData}
+                  margin={{ right: 10, left: 10, top: 10, bottom: 0 }}
+                >
+                  <XAxis
+                    dataKey="date"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    yAxisId="weight"
+                    orientation="left"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    domain={["dataMin - 0.5", "dataMax + 0.5"]}
+                    width={40}
+                  />
+                  <YAxis
+                    yAxisId="calories"
+                    orientation="right"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    width={45}
+                  />
+                  <Tooltip
+                    contentStyle={{ fontSize: "12px" }}
+                    itemStyle={{ fontSize: "12px" }}
+                    labelStyle={{ fontSize: "12px" }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      fontSize: "12px",
+                      paddingTop: "15px",
+                    }}
+                  />
+                  <Bar
+                    yAxisId="calories"
+                    dataKey="calories"
+                    fill="rgb(59,130,246)"
+                    name="カロリー (kcal)"
+                    barSize={6}
+                  />
+                  <Line
+                    yAxisId="weight"
+                    type="monotone"
+                    dataKey="weight"
+                    stroke="rgb(34,197,94)"
+                    name="体重 (kg)"
+                    strokeWidth={2}
+                    dot={{ r: 2 }}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
