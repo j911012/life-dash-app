@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Scale, Utensils, ChevronLeft, ChevronRight } from "lucide-react";
+import { Scale, Utensils, ChevronLeft, ChevronRight, Home } from "lucide-react";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -64,15 +64,22 @@ export default function CaloriesPage() {
   return (
     <div className="h-[calc(100vh-4rem)] overflow-y-auto px-4 py-6 pb-20 md:pb-6">
       <div className="mx-auto space-y-4 md:space-y-6">
-        {/* 日付表示 */}
+        {/* ヘッダー */}
         <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="p-1 hover:bg-accent rounded-full"
+            aria-label="ホームへ戻る"
+          >
+            <Home className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" />
+          </Link>
           <div className="flex items-center gap-2">
             <button className="p-1 hover:bg-accent rounded-full">
               <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
             </button>
-            <h1 className="text-lg md:text-xl font-semibold">
+            <span className="text-base md:text-lg font-medium">
               今日 {formattedDate} ({dayOfWeek})
-            </h1>
+            </span>
             <button className="p-1 hover:bg-accent rounded-full">
               <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
             </button>
